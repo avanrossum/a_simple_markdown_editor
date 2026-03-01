@@ -127,7 +127,7 @@ export default function App() {
 
   const saveTab = useCallback(async (tabId) => {
     const tab = tabs.find((t) => t.id === (tabId || activeTabId));
-    if (!tab) return;
+    if (!tab) return false;
 
     if (!tab.filePath) {
       return saveTabAs(tab.id);
@@ -145,19 +145,22 @@ export default function App() {
             : t
         )
       );
+      await electronAPI.watchFile(tab.filePath);
+      return true;
     }
     await electronAPI.watchFile(tab.filePath);
+    return false;
   }, [tabs, activeTabId]);
 
   const saveTabAs = useCallback(async (tabId) => {
     const tab = tabs.find((t) => t.id === (tabId || activeTabId));
-    if (!tab) return;
+    if (!tab) return false;
 
     const result = await electronAPI.showSaveDialog({
       defaultPath: tab.filePath || 'Untitled.md',
     });
 
-    if (result.canceled || !result.filePath) return;
+    if (result.canceled || !result.filePath) return false;
 
     const writeResult = await electronAPI.writeFile(result.filePath, tab.content);
     if (writeResult.success) {
@@ -177,7 +180,9 @@ export default function App() {
       );
       electronAPI.addRecentFile(result.filePath);
       electronAPI.watchFile(result.filePath);
+      return true;
     }
+    return false;
   }, [tabs, activeTabId]);
 
   const newFile = useCallback(() => {
@@ -202,8 +207,9 @@ export default function App() {
       });
 
       if (result.response === 0) {
-        // Save
-        await saveTab(tabId);
+        // Save — abort close if save was canceled
+        const saved = await saveTab(tabId);
+        if (!saved) return;
       } else if (result.response === 2) {
         // Cancel
         return;

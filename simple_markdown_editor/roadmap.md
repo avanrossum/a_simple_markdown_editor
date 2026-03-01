@@ -12,6 +12,8 @@
 - [x] Application menu (File, Edit, View, Window, Help)
 - [x] Settings persistence (JSON store)
 - [x] Window bounds save/restore
+- [x] Multi-window support (Cmd+Shift+N)
+- [x] Cmd+W closes tab (not window)
 
 ### Editor
 
@@ -85,7 +87,23 @@
 
 ---
 
-## v0.3.0 — Auto-Updates & Polish
+## v0.3.0 — Toolbar Dialogs & Polish
+
+> Status: **Planned**
+
+- [ ] Link button: dialog to enter URL
+- [ ] Image button: dialog with "Insert from file" and "Insert URL" options
+- [ ] Keyboard shortcuts for formatting (Cmd+B, Cmd+I, etc.)
+- [ ] Editor: bracket/quote auto-pairing
+- [ ] Auto-save option (with configurable delay)
+- [ ] File browser: drag to resize width
+- [ ] File browser: right-click context menu (rename, delete, new file)
+- [ ] Export to HTML / PDF
+- [ ] Performance: large file handling
+
+---
+
+## v0.4.0 — Auto-Updates
 
 > Status: **Planned**
 
@@ -94,10 +112,9 @@
 - [ ] Update available notification
 - [ ] Download and install update flow
 - [ ] Update dialog UI
-- [ ] Auto-save option (with configurable delay)
-- [ ] File browser: drag to resize width
-- [ ] File browser: right-click context menu (rename, delete, new file)
-- [ ] Export to HTML / PDF
-- [ ] Keyboard shortcuts for formatting (Cmd+B, Cmd+I, etc.)
-- [ ] Editor: bracket/quote auto-pairing
-- [ ] Performance: large file handling
+
+---
+
+## Known Issues
+
+- Relative/local images in preview not rendering (custom protocol registered but images still fail to load)

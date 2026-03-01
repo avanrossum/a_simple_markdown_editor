@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Preview font family selector (system fonts: Helvetica Neue, Georgia, Palatino, Avenir Next, Charter)
 - Theme selector: segmented control (Dark / Light / System) matching design standards
 - Editor font family options switched to system monospace fonts (SF Mono, Menlo, Monaco, Courier New, Andale Mono)
+- Multi-window support: Cmd+Shift+N opens a new independent window
+- Cmd+W closes the active tab instead of the whole window
 
 ### Changed
 
@@ -33,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Font size setting not applying to editor
 - Font family setting not applying to editor
 - Preview font family now respects settings
+- Closing dirty tab with "Save" then canceling save dialog no longer discards the tab
 
 ## [0.1.0] - 2026-03-01
 
