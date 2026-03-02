@@ -147,9 +147,25 @@
 
 ---
 
-## v0.2.0 — Clickable Links
+## v0.2.0 — Keyboard Shortcuts & Clickable Links
 
 > Status: **Planned**
+
+### Keyboard Shortcuts
+
+- [ ] Bold (Cmd+B)
+- [ ] Italic (Cmd+I)
+- [ ] Strikethrough (Cmd+Shift+X)
+- [ ] Inline code (Cmd+E)
+- [ ] Code block (Cmd+Shift+C)
+- [ ] Heading cycle (Cmd+Shift+H or similar)
+- [ ] Bullet list (Cmd+Shift+L)
+- [ ] Numbered list (Cmd+Shift+O)
+- [ ] Link (Cmd+K)
+- [ ] Horizontal rule (Cmd+Shift+-)
+- [ ] Blockquote (Cmd+Shift+.)
+
+### Clickable Links
 
 - [ ] File browser: delete folder (move to trash) via context menu
 - [ ] Preview pane: clickable links to local .md files open in new tab
@@ -166,7 +182,6 @@
 
 - [ ] Link button: dialog to enter URL
 - [ ] Image button: dialog with "Insert from file" and "Insert URL" options
-- [ ] Keyboard shortcuts for formatting (Cmd+B, Cmd+I, etc.)
 - [ ] Editor: bracket/quote auto-pairing
 - [ ] Auto-save option (with configurable delay)
 - [ ] File browser: drag to resize width
