@@ -86,7 +86,7 @@
 - [x] Release script (build + sign + GitHub release)
 - [x] Generate .icns from icon SVG
 - [x] First successful build (unsigned)
-- [ ] First successful signed build
+- [x] First successful signed build
 - [ ] Test on clean macOS install
 
 ### Auto-Updates

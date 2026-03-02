@@ -40,19 +40,21 @@ git push origin main --tags
 echo "Creating GitHub release..."
 
 # Extract changelog for this version
-CHANGELOG_NOTES=$(sed -n "/^## \[${VERSION}\]/,/^## \[/p" changelog.md | head -n -1 | tail -n +2)
+CHANGELOG_NOTES=$(sed -n "/^## \[${VERSION}\]/,/^## \[/p" ../CHANGELOG.md | head -n -1 | tail -n +2)
 
 if [ -z "$CHANGELOG_NOTES" ]; then
   CHANGELOG_NOTES="Release v${VERSION}"
 fi
 
-# Find the built artifacts
+# Find the built artifacts (DMG for download, ZIP + YML for auto-update)
 DMG_FILE=$(ls dist/*.dmg 2>/dev/null | head -1)
 ZIP_FILE=$(ls dist/*.zip 2>/dev/null | head -1)
+YML_FILE=$(ls dist/latest-mac.yml 2>/dev/null | head -1)
 
 RELEASE_FILES=""
 [ -n "$DMG_FILE" ] && RELEASE_FILES="$RELEASE_FILES $DMG_FILE"
 [ -n "$ZIP_FILE" ] && RELEASE_FILES="$RELEASE_FILES $ZIP_FILE"
+[ -n "$YML_FILE" ] && RELEASE_FILES="$RELEASE_FILES $YML_FILE"
 
 gh release create "v${VERSION}" \
   --title "v${VERSION}" \

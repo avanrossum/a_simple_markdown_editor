@@ -4,7 +4,6 @@ module.exports = {
   files: [
     'src/main/**/*',
     'dist-renderer/**/*',
-    '!node_modules/**/*',
   ],
   extraMetadata: {
     main: 'src/main/main.js',
