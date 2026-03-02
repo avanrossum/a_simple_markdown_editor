@@ -101,6 +101,43 @@
 
 ---
 
+## v0.1.11 — Security Hardening
+
+> Status: **Planned** — Priority: **IMMEDIATE** (before any wider distribution)
+> Source: Adversarial code review (`The_Adversary/reviews/markdown_editor/REPORT.md`)
+
+### Critical (Attack Chain: malicious .md → full filesystem compromise)
+
+- [ ] **C1.** XSS via unsanitized markdown preview — `Preview.jsx` uses `dangerouslySetInnerHTML` with raw `marked` output; any `.md` file with embedded `<script>` or event handlers executes in renderer context. **Fix:** Add DOMPurify before rendering.
+- [ ] **C2.** Unrestricted filesystem access via IPC — `file:read`, `file:write`, `file:rename`, `file:create`, `file:mkdir`, `file:trash` accept arbitrary paths with zero validation. **Fix:** Path validation restricting ops to workspace/open-file directories.
+- [ ] **C3.** Path traversal in `local-resource://` protocol — no validation, can serve any file on disk (e.g. `local-resource:///etc/passwd`). **Fix:** Restrict to workspace directory + image extensions only.
+- [ ] **C5.** `shell.openExternal` accepts arbitrary URL schemes — no validation before passing to OS. **Fix:** Allowlist `https://`, `http://`, `mailto:` only.
+
+### High
+
+- [ ] **H1.** Bypassable regex HTML sanitizer in `UpdateDialog.jsx` — single-quoted attrs, no-quote attrs, `javascript:` hrefs all bypass it. **Fix:** Replace with DOMPurify.
+- [ ] **H2.** `sandbox: false` on main BrowserWindow — comment says "needed for chokidar in preload" but chokidar runs in main process. **Fix:** Enable `sandbox: true`, verify IPC still works.
+- [ ] **H3.** Missing CSP on settings window (`src/settings/index.html`) and update dialog. **Fix:** Add same CSP meta tag as main renderer.
+- [ ] **H4.** `file:resolve-path` IPC handler exposes `path.resolve()` to renderer — aids path traversal. **Fix:** Remove; do path resolution in main process only.
+- [ ] **H6.** No debounce on preview rendering — `marked.parse()` runs on every keystroke. **Fix:** Add 150-300ms debounce.
+
+### Medium (Code Quality)
+
+- [ ] **M1.** Duplicate CSS button styles across `app.css` and `update-dialog/styles.css` — extract shared styles
+- [ ] **M2.** Test artifact `Architecture_test_second_save.md` in repo root — delete it
+- [ ] **M3.** Unused settings standalone window entry point (`src/settings/index.html`, `index.jsx`) — remove
+- [ ] **M4.** `release.sh` uses `git add -A` — replace with explicit file staging
+- [ ] **M5.** `buildAnchorMap()` rebuilt on every scroll — cache and rebuild only on content change
+- [ ] **H5.** Entitlements: verify `disable-library-validation` is actually required, remove if not
+
+### Low / Deferred
+
+- [ ] **L1.** No test framework — add Vitest
+- [ ] **L2.** No linting — add ESLint + Prettier
+- [ ] **M8/M9.** Decompose `App.jsx` (643 lines) and `FileBrowser.jsx` (505 lines) into custom hooks
+
+---
+
 ## v0.2.0 — Clickable Links
 
 > Status: **Planned**
