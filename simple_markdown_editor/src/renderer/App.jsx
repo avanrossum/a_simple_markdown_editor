@@ -6,6 +6,7 @@ import Preview from './components/Preview';
 import Toolbar from './components/Toolbar';
 import SearchReplace from './components/SearchReplace';
 import DiffView from './components/DiffView';
+import PreviewHeader from './components/PreviewHeader';
 import Settings from '../settings/Settings';
 
 const { electronAPI } = window;
@@ -585,7 +586,7 @@ export default function App() {
 
         {/* Preview Column */}
         <div className="preview-column">
-          <div className="preview-spacer" />
+          <PreviewHeader filePath={activeTab.filePath} />
           <Preview
             content={activeTab.content}
             theme={theme}

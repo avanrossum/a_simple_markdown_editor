@@ -72,12 +72,6 @@ body {
   min-width: 0;
 }
 
-.preview-spacer {
-  height: 33px; /* Match toolbar height */
-  flex-shrink: 0;
-  border-bottom: 1px solid var(--border-color);
-}
-
 /* ── Scrollbar ── */
 
 ::-webkit-scrollbar {
