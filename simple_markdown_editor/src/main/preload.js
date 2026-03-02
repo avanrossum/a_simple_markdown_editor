@@ -9,7 +9,6 @@ const electronAPI = {
   showOpenDialog: (options) => ipcRenderer.invoke('file:open-dialog', options),
   getFileStat: (filePath) => ipcRenderer.invoke('file:stat', filePath),
   fileExists: (filePath) => ipcRenderer.invoke('file:exists', filePath),
-  resolvePath: (...segments) => ipcRenderer.invoke('file:resolve-path', ...segments),
   getBasename: (filePath) => ipcRenderer.invoke('file:basename', filePath),
   getDirname: (filePath) => ipcRenderer.invoke('file:dirname', filePath),
 

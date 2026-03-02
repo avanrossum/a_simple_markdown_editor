@@ -149,10 +149,6 @@ function registerIpcHandlers({ store, fileWatcher, getFocusedWindow }) {
     return fs.existsSync(filePath);
   });
 
-  ipcMain.handle('file:resolve-path', async (_, ...segments) => {
-    return path.resolve(...segments);
-  });
-
   ipcMain.handle('file:basename', async (_, filePath) => {
     return path.basename(filePath);
   });
