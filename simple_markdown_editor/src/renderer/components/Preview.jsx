@@ -197,6 +197,9 @@ export default function Preview({ content, theme, editorRef, filePath }) {
       return targetMax > 0 && sourceMax > 0 ? (sourceScroll / sourceMax) * targetMax : 0;
     }
 
+    // At the very top, both panes should be at position 0
+    if (sourceScroll <= 0) return 0;
+
     // Virtual start and end anchors for smooth edges
     const points = [
       { editorY: 0, previewY: 0 },
