@@ -122,6 +122,7 @@ const electronAPI = {
   // ── App Info ──
   getVersion: () => ipcRenderer.invoke('app:version'),
   openExternal: (url) => ipcRenderer.invoke('app:open-external', url),
+  checkForUpdates: () => ipcRenderer.invoke('app:check-for-updates'),
   getSystemTheme: () => ipcRenderer.invoke('app:system-theme'),
   getHomeDir: () => ipcRenderer.invoke('app:home-dir'),
   getParentDir: (dirPath) => ipcRenderer.invoke('app:parent-dir', dirPath),

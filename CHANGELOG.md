@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.26] - 2026-03-02
+
+### Fixed
+
+- Button styles not loading in Settings/About and update dialog (CSS `@import` must be before all rules)
+- Exposed "Check for Updates" in preload bridge for renderer access
+
+### Added
+
+- "Check for Updates" button in Settings About section
+
 ## [0.1.10] - 2026-03-01
 
 ### Added

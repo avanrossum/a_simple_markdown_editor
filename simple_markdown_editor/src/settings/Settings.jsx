@@ -154,6 +154,12 @@ export default function Settings({ settings: initialSettings, onClose }) {
             >
               GitHub
             </button>
+            <button
+              className="btn btn-ghost"
+              onClick={() => electronAPI.checkForUpdates()}
+            >
+              Check for Updates
+            </button>
           </div>
         </div>
 
