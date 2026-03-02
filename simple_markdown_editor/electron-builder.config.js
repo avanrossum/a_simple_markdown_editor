@@ -8,6 +8,14 @@ module.exports = {
   extraMetadata: {
     main: 'src/main/main.js',
   },
+  fileAssociations: [
+    {
+      ext: ['md', 'markdown', 'mdown', 'mkd', 'mkdn', 'mdwn', 'mdx', 'txt'],
+      name: 'Markdown Document',
+      role: 'Editor',
+      icon: 'build/icon.icns',
+    },
+  ],
   mac: {
     category: 'public.app-category.productivity',
     target: ['dmg', 'zip'],
