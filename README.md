@@ -103,7 +103,7 @@ Release builds require Apple Developer ID credentials (APPLE_ID, APPLE_APP_SPECI
 | File Watching | chokidar |
 | Diffing | diff (external change resolution) |
 | Updates | electron-updater (GitHub Releases) |
-| Language | JavaScript |
+| Language | JavaScript (TypeScript migration planned) |
 
 ## Repository Structure
 

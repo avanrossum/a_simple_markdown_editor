@@ -187,3 +187,16 @@
 - [ ] File browser: drag to resize width
 - [ ] Export to HTML / PDF
 - [ ] Performance: large file handling
+
+---
+
+## v0.4.0 — TypeScript Migration
+
+> Status: **Planned**
+
+- [ ] Add TypeScript config (`tsconfig.json`) and build tooling
+- [ ] Migrate main process modules (main.js, ipc-handlers.js, store.js, etc.)
+- [ ] Migrate renderer components (App, Editor, Preview, FileBrowser, etc.)
+- [ ] Migrate settings and update-dialog entry points
+- [ ] Migrate preload scripts
+- [ ] Add type definitions for IPC channels and electronAPI bridge
