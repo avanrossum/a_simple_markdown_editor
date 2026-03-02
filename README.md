@@ -4,7 +4,7 @@ A dead simple markdown editor for macOS. Fast, focused, and free of bloat.
 
 I live in markdown daily. Every editor I tried was either too expensive, too slow, too feature-rich, or too buggy. So I built the one I actually wanted to use — three panes, no cloud, no account, no subscription. Just a clean editor, a live preview, and a file browser that stays out of your way.
 
-[![Download](https://img.shields.io/github/v/release/avanrossum/a_simple_markdown_editor?label=Download&color=blue)](https://github.com/avanrossum/a_simple_markdown_editor/releases/latest)
+[![Download](https://img.shields.io/badge/download-latest-blue)](https://github.com/avanrossum/a_simple_markdown_editor/releases/latest)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Website](https://img.shields.io/badge/website-mipyip.com-blue)](https://mipyip.com/products/simple-markdown-editor)
 
