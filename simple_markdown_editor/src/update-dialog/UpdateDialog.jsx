@@ -18,6 +18,7 @@ const TITLES = {
 export default function UpdateDialog() {
   const [data, setData] = useState(null);
   const [downloadPercent, setDownloadPercent] = useState(null);
+  const [downloadError, setDownloadError] = useState(null);
 
   // Fetch init data from main process
   useEffect(() => {
@@ -41,6 +42,15 @@ export default function UpdateDialog() {
     return cleanup;
   }, []);
 
+  // Listen for download errors
+  useEffect(() => {
+    const cleanup = updateAPI.onDownloadError((message) => {
+      setDownloadError(message);
+      setDownloadPercent(null);
+    });
+    return cleanup;
+  }, []);
+
   // Listen for theme changes
   useEffect(() => {
     const cleanup = updateAPI.onThemeChanged((theme) => {
@@ -60,6 +70,7 @@ export default function UpdateDialog() {
   if (!data) return null;
 
   const { mode, currentVersion, newVersion } = data;
+  const isDownloading = downloadPercent !== null && !downloadError;
 
   return (
     <div className="update-container">
@@ -78,7 +89,7 @@ export default function UpdateDialog() {
         />
       )}
 
-      {mode === 'update-available' && downloadPercent !== null && (
+      {mode === 'update-available' && isDownloading && (
         <div className="update-progress">
           <div className="update-progress-label">Downloading update...</div>
           <div className="update-progress-track">
@@ -91,20 +102,29 @@ export default function UpdateDialog() {
         </div>
       )}
 
+      {downloadError && (
+        <div className="update-progress">
+          <div className="update-progress-label" style={{ color: 'var(--text-error, #ff6b6b)' }}>
+            Download failed: {downloadError}
+          </div>
+        </div>
+      )}
+
       <div className="update-actions">
-        {mode === 'update-available' && downloadPercent === null && (
+        {mode === 'update-available' && !isDownloading && (
           <>
             <button className="btn" onClick={() => updateAPI.close()}>
-              Later
+              {downloadError ? 'Close' : 'Later'}
             </button>
             <button
               className="btn btn-primary"
               onClick={() => {
+                setDownloadError(null);
                 setDownloadPercent(0);
                 updateAPI.downloadUpdate();
               }}
             >
-              Download Update
+              {downloadError ? 'Retry' : 'Download Update'}
             </button>
           </>
         )}

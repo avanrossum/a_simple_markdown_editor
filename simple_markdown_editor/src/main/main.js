@@ -337,6 +337,9 @@ function setupAutoUpdater() {
   ipcMain.handle('app:download-update', () => {
     autoUpdater.downloadUpdate().catch((err) => {
       console.error('[main] Download update failed:', err.message);
+      if (updateDialogWindow && !updateDialogWindow.isDestroyed()) {
+        updateDialogWindow.webContents.send('app:download-error', err.message);
+      }
     });
   });
 

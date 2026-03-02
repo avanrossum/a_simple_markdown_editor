@@ -16,6 +16,7 @@ module.exports = {
       icon: 'build/icon.icns',
     },
   ],
+  artifactName: '${name}-${version}-${arch}.${ext}',
   mac: {
     category: 'public.app-category.productivity',
     target: ['dmg', 'zip'],

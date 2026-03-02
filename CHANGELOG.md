@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.29] - 2026-03-02
+
+### Fixed
+
+- Auto-update download broken: artifact filenames had spaces which GitHub converts to dots, mismatching `latest-mac.yml` — now uses hyphenated `artifactName` for consistent naming
+- Download errors now shown in update dialog instead of failing silently
+
 ## [0.1.28] - 2026-03-02
 
 ### Added

@@ -17,6 +17,12 @@ const updateAPI = {
     ipcRenderer.on('app:download-progress', handler);
     return () => ipcRenderer.removeListener('app:download-progress', handler);
   },
+
+  onDownloadError: (callback) => {
+    const handler = (_event, message) => callback(message);
+    ipcRenderer.on('app:download-error', handler);
+    return () => ipcRenderer.removeListener('app:download-error', handler);
+  },
 };
 
 contextBridge.exposeInMainWorld('updateAPI', updateAPI);
