@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.30] - 2026-03-02
+
+### Fixed
+
+- Cmd+Q requires two presses to fully quit — app windows closed but process stayed alive in dock
+
 ## [0.1.29] - 2026-03-02
 
 ### Fixed
