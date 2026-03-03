@@ -42,8 +42,14 @@ export default function App() {
   const [showAbout, setShowAbout] = useState(false);
   const [diffData, setDiffData] = useState(null);
   const [theme, setTheme] = useState('dark');
+  const [fileBrowserWidth, setFileBrowserWidth] = useState(180);
+  const [editorSplit, setEditorSplit] = useState(0.5);
   const editorRef = useRef(null);
   const sessionRestoredRef = useRef(false);
+  const mainContentRef = useRef(null);
+  const dragTypeRef = useRef(null);
+  const fileBrowserWidthRef = useRef(fileBrowserWidth);
+  const editorSplitRef = useRef(editorSplit);
 
   const activeTab = tabs?.find((t) => t.id === activeTabId) || tabs?.[0];
 
@@ -53,11 +59,18 @@ export default function App() {
     electronAPI.getSettings().then((s) => {
       setSettings(s);
       applyTheme(s.theme);
+      if (s.fileBrowserWidth) setFileBrowserWidth(s.fileBrowserWidth);
+      if (s.editorSplit != null) setEditorSplit(s.editorSplit);
     });
 
     const unsub = electronAPI.onSettingsChanged((s) => {
       setSettings(s);
       applyTheme(s.theme);
+      // Sync resize state from other windows (only when not actively dragging)
+      if (!dragTypeRef.current) {
+        if (s.fileBrowserWidth) setFileBrowserWidth(s.fileBrowserWidth);
+        if (s.editorSplit != null) setEditorSplit(s.editorSplit);
+      }
     });
     return unsub;
   }, []);
@@ -528,6 +541,71 @@ export default function App() {
     return tab.content !== tab.savedContent;
   }
 
+  // ── Pane Resize ──
+
+  const SIDEBAR_MIN = 120;
+  const SIDEBAR_MAX = 360;
+  const SPLIT_MIN = 0.2;
+  const SPLIT_MAX = 0.8;
+  const SNAP_BUFFER_PX = 4;
+  const HANDLE_WIDTH = 6;
+
+  const handleResizeStart = useCallback((type) => (e) => {
+    e.preventDefault();
+    dragTypeRef.current = type;
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'col-resize';
+    document.body.classList.add('is-resizing');
+
+    const onMouseMove = (moveEvent) => {
+      const container = mainContentRef.current;
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const mouseX = moveEvent.clientX - rect.left;
+
+      if (dragTypeRef.current === 'sidebar') {
+        const clamped = Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, mouseX));
+        setFileBrowserWidth(clamped);
+        fileBrowserWidthRef.current = clamped;
+      } else if (dragTypeRef.current === 'editor') {
+        // Available space for editor+preview = total - sidebar - two handles
+        const editorAreaStart = fileBrowserWidthRef.current + HANDLE_WIDTH;
+        const editorAreaWidth = rect.width - editorAreaStart - HANDLE_WIDTH;
+        const posInArea = mouseX - editorAreaStart;
+        let ratio = posInArea / editorAreaWidth;
+
+        // Snap to center
+        const centerPx = editorAreaWidth / 2;
+        if (Math.abs(posInArea - centerPx) <= SNAP_BUFFER_PX) {
+          ratio = 0.5;
+        }
+
+        ratio = Math.max(SPLIT_MIN, Math.min(SPLIT_MAX, ratio));
+        setEditorSplit(ratio);
+        editorSplitRef.current = ratio;
+      }
+    };
+
+    const onMouseUp = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+      document.body.classList.remove('is-resizing');
+
+      // Persist on drag end (read from refs for latest values)
+      if (dragTypeRef.current === 'sidebar') {
+        electronAPI.setSetting('fileBrowserWidth', fileBrowserWidthRef.current);
+      } else if (dragTypeRef.current === 'editor') {
+        electronAPI.setSetting('editorSplit', editorSplitRef.current);
+      }
+      dragTypeRef.current = null;
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }, []);
+
   if (!settings || !tabs) return null; // Loading
 
   return (
@@ -549,14 +627,14 @@ export default function App() {
       </div>
 
       {/* ── Main Content ── */}
-      <div className="main-content">
+      <div className="main-content" ref={mainContentRef}>
         {/* File Browser */}
         <FileBrowser
           folderPath={folderPath}
           onOpenFile={openFile}
           onSetFolder={setFolderPath}
           onOpenSettings={() => setShowSettings(true)}
-          width={settings.fileBrowserWidth}
+          width={fileBrowserWidth}
           activeFilePath={activeTab?.filePath}
           onFileRenamed={handleFileRenamed}
           onFileDeleted={handleFileDeleted}
@@ -564,8 +642,11 @@ export default function App() {
           onUpdateFavorites={(f) => electronAPI.setSetting('favorites', f)}
         />
 
+        {/* Sidebar Resize Handle */}
+        <div className="resize-handle" onMouseDown={handleResizeStart('sidebar')} />
+
         {/* Editor Column */}
-        <div className="editor-column">
+        <div className="editor-column" style={{ flex: editorSplit }}>
           <Toolbar onAction={handleToolbarAction} />
           {showSearch && (
             <SearchReplace
@@ -586,8 +667,11 @@ export default function App() {
           />
         </div>
 
+        {/* Editor/Preview Resize Handle */}
+        <div className="resize-handle" onMouseDown={handleResizeStart('editor')} />
+
         {/* Preview Column */}
-        <div className="preview-column">
+        <div className="preview-column" style={{ flex: 1 - editorSplit }}>
           <PreviewHeader filePath={activeTab.filePath} />
           <Preview
             content={activeTab.content}

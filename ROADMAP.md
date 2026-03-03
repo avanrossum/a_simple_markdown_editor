@@ -161,6 +161,14 @@
 - [x] Right-click context menu: "Remove from Favorites" in favorites panel
 - [x] "Copy Path" context menu option for files and folders in file tree
 
+### Resizable Panes
+
+- [x] Draggable resize handle between file browser and editor (6px visible bar, col-resize cursor)
+- [x] Draggable resize handle between editor and preview panes
+- [x] Editor/preview handle snaps to center with 4px buffer zone
+- [x] File browser width constrained to 120–360px range
+- [x] Both resize positions persist to settings and sync across windows
+
 ### Keyboard Shortcuts
 
 - [ ] Bold (Cmd+B)

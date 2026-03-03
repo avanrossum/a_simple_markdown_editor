@@ -42,6 +42,7 @@ const DEFAULT_SETTINGS = {
   autoSave: false,
   autoSaveDelay: 5000,
   fileBrowserWidth: 180,
+  editorSplit: 0.5,
   recentFiles: [],
   recentDirectories: [],
   windowBounds: null,

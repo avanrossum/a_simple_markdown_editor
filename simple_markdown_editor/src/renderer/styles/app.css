@@ -62,7 +62,6 @@ body {
   flex-direction: column;
   flex: 1;
   min-width: 0;
-  border-right: 1px solid var(--border-color);
 }
 
 /* ── Preview Column ── */
@@ -72,6 +71,24 @@ body {
   flex-direction: column;
   flex: 1;
   min-width: 0;
+}
+
+/* ── Resize Handle ── */
+
+.resize-handle {
+  width: 6px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  background: var(--border-color);
+  transition: background var(--transition-normal);
+}
+
+.resize-handle:hover {
+  background: var(--accent);
+}
+
+body.is-resizing .resize-handle {
+  background: var(--border-color);
 }
 
 /* ── Scrollbar ── */

@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Favorites: stale path detection (muted/italic for missing paths, e.g. unmounted drives)
 - File browser context menu: "Copy Path" option for files and folders
 - File browser context menu: "Add to Favorites" / "Remove from Favorites" toggle
+- Resizable file browser pane: drag the 6px handle between file browser and editor (120–360px range)
+- Resizable editor/preview split: drag handle between editor and preview with center snap (4px buffer)
+- Both resize positions persist across app restarts and sync across windows
 
 ## [0.1.32] - 2026-03-02
 
