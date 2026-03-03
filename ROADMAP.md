@@ -147,9 +147,19 @@
 
 ---
 
-## v0.2.0 — Keyboard Shortcuts & Clickable Links
+## v0.2.0 — Favorites, Keyboard Shortcuts & Clickable Links
 
-> Status: **Planned**
+> Status: **In Progress**
+
+### Favorites
+
+- [x] Favorites panel above file browser (pin files and folders for quick access)
+- [x] Click favorite folder → opens in file browser; click file → opens in editor
+- [x] Drag-and-drop reordering within favorites
+- [x] Stale path detection (muted/italic for missing paths)
+- [x] Right-click context menu: "Add to Favorites" / "Remove from Favorites" in file tree
+- [x] Right-click context menu: "Remove from Favorites" in favorites panel
+- [x] "Copy Path" context menu option for files and folders in file tree
 
 ### Keyboard Shortcuts
 

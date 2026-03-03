@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Favorites panel above file browser: pin frequently-used files and folders for quick access
+- Favorites: click folder to open in browser, click file to open in editor
+- Favorites: drag-and-drop reordering
+- Favorites: stale path detection (muted/italic for missing paths, e.g. unmounted drives)
+- File browser context menu: "Copy Path" option for files and folders
+- File browser context menu: "Add to Favorites" / "Remove from Favorites" toggle
+
 ## [0.1.32] - 2026-03-02
 
 ### Changed

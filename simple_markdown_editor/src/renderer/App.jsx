@@ -560,6 +560,8 @@ export default function App() {
           activeFilePath={activeTab?.filePath}
           onFileRenamed={handleFileRenamed}
           onFileDeleted={handleFileDeleted}
+          favorites={settings.favorites || []}
+          onUpdateFavorites={(f) => electronAPI.setSetting('favorites', f)}
         />
 
         {/* Editor Column */}

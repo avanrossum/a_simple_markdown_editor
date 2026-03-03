@@ -243,6 +243,134 @@ function FileTreeItem({ entry, depth, onOpenFile, onSetRoot, refreshKey, activeF
   );
 }
 
+// ── Favorites Panel ──
+
+function FavoritesPanel({ favorites, onOpenFile, onSetFolder, onRemoveFavorite, onReorderFavorites }) {
+  const [staleSet, setStaleSet] = useState(new Set());
+  const [dragIndex, setDragIndex] = useState(null);
+  const [dropIndex, setDropIndex] = useState(null);
+  const [contextMenu, setContextMenu] = useState(null);
+
+  // Check which paths still exist
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const stale = new Set();
+      for (const fav of favorites) {
+        const exists = await electronAPI.fileExists(fav.path);
+        if (!exists) stale.add(fav.path);
+      }
+      if (!cancelled) setStaleSet(stale);
+    })();
+    return () => { cancelled = true; };
+  }, [favorites]);
+
+  const handleClick = useCallback((fav) => {
+    if (staleSet.has(fav.path)) return;
+    if (fav.type === 'directory') {
+      onSetFolder(fav.path);
+    } else {
+      onOpenFile(fav.path);
+    }
+  }, [staleSet, onSetFolder, onOpenFile]);
+
+  const handleContextMenu = useCallback((e, fav) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      items: [
+        { label: 'Copy Path', action: () => navigator.clipboard.writeText(fav.path).catch(() => {}) },
+        { separator: true },
+        { label: 'Remove from Favorites', action: () => onRemoveFavorite(fav.path) },
+      ],
+    });
+  }, [onRemoveFavorite]);
+
+  // ── Drag-to-Reorder ──
+
+  const handleDragStart = useCallback((e, index) => {
+    setDragIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.currentTarget.style.opacity = '0.4';
+  }, []);
+
+  const handleDragEnd = useCallback((e) => {
+    e.currentTarget.style.opacity = '1';
+    setDragIndex(null);
+    setDropIndex(null);
+  }, []);
+
+  const handleDragOver = useCallback((e, index) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDropIndex(index);
+  }, []);
+
+  const handleDrop = useCallback((e, toIndex) => {
+    e.preventDefault();
+    if (dragIndex === null || dragIndex === toIndex) return;
+    const reordered = [...favorites];
+    const [moved] = reordered.splice(dragIndex, 1);
+    reordered.splice(toIndex, 0, moved);
+    onReorderFavorites(reordered);
+    setDragIndex(null);
+    setDropIndex(null);
+  }, [dragIndex, favorites, onReorderFavorites]);
+
+  if (favorites.length === 0) return null;
+
+  return (
+    <div className="favorites-panel">
+      <div className="favorites-header">
+        <span className="favorites-title">Favorites</span>
+      </div>
+      <div className="favorites-list">
+        {favorites.map((fav, index) => {
+          const isStale = staleSet.has(fav.path);
+          const name = fav.path.split('/').pop();
+          const isDropTarget = dropIndex === index && dragIndex !== null && dragIndex !== index;
+
+          return (
+            <div
+              key={fav.path}
+              className={`favorites-item${isStale ? ' is-stale' : ''}${isDropTarget ? ' is-drop-target' : ''}`}
+              onClick={() => handleClick(fav)}
+              onContextMenu={(e) => handleContextMenu(e, fav)}
+              title={isStale ? `${fav.path} (not found)` : fav.path}
+              draggable
+              onDragStart={(e) => handleDragStart(e, index)}
+              onDragEnd={handleDragEnd}
+              onDragOver={(e) => handleDragOver(e, index)}
+              onDrop={(e) => handleDrop(e, index)}
+            >
+              {fav.type === 'directory' ? (
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" className="favorites-icon">
+                  <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" className="favorites-icon">
+                  <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z" />
+                </svg>
+              )}
+              <span className="favorites-name">{name}</span>
+            </div>
+          );
+        })}
+      </div>
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          items={contextMenu.items}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
+    </div>
+  );
+}
+
 // ── Path Helper ──
 
 function truncatePath(fullPath, homeDir) {
@@ -254,7 +382,7 @@ function truncatePath(fullPath, homeDir) {
 
 // ── Main Component ──
 
-export default function FileBrowser({ folderPath, onOpenFile, onSetFolder, onOpenSettings, width, activeFilePath, onFileRenamed, onFileDeleted }) {
+export default function FileBrowser({ folderPath, onOpenFile, onSetFolder, onOpenSettings, width, activeFilePath, onFileRenamed, onFileDeleted, favorites, onUpdateFavorites }) {
   const [entries, setEntries] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const [homeDir, setHomeDir] = useState(null);
@@ -362,6 +490,23 @@ export default function FileBrowser({ folderPath, onOpenFile, onSetFolder, onOpe
     }
   }, [folderPath, loadDirectory, onFileDeleted]);
 
+  // ── Favorites Helpers ──
+
+  const isFavorited = useCallback((filePath) => {
+    return favorites.some((f) => f.path === filePath);
+  }, [favorites]);
+
+  const addToFavorites = useCallback((filePath, type) => {
+    if (isFavorited(filePath)) return;
+    const updated = [...favorites, { path: filePath, type }];
+    onUpdateFavorites(updated);
+  }, [favorites, isFavorited, onUpdateFavorites]);
+
+  const removeFromFavorites = useCallback((filePath) => {
+    const updated = favorites.filter((f) => f.path !== filePath);
+    onUpdateFavorites(updated);
+  }, [favorites, onUpdateFavorites]);
+
   const handleContextMenu = useCallback((e, entry) => {
     const items = [];
 
@@ -391,12 +536,30 @@ export default function FileBrowser({ folderPath, onOpenFile, onSetFolder, onOpe
 
     items.push({ separator: true });
     items.push({
+      label: 'Copy Path',
+      action: () => navigator.clipboard.writeText(entry.path).catch(() => {}),
+    });
+
+    if (isFavorited(entry.path)) {
+      items.push({
+        label: 'Remove from Favorites',
+        action: () => removeFromFavorites(entry.path),
+      });
+    } else {
+      items.push({
+        label: 'Add to Favorites',
+        action: () => addToFavorites(entry.path, entry.isDirectory ? 'directory' : 'file'),
+      });
+    }
+
+    items.push({ separator: true });
+    items.push({
       label: 'Show in Finder',
       action: () => electronAPI.showInFolder(entry.path),
     });
 
     setContextMenu({ x: e.clientX, y: e.clientY, items });
-  }, [createNewFile, createNewFolder, trashFile]);
+  }, [createNewFile, createNewFolder, trashFile, isFavorited, addToFavorites, removeFromFavorites]);
 
   const handleTreeContextMenu = useCallback((e) => {
     if (e.target.closest('.file-tree-row')) return;
@@ -462,6 +625,15 @@ export default function FileBrowser({ folderPath, onOpenFile, onSetFolder, onOpe
           </button>
         </div>
       )}
+
+      {/* Favorites */}
+      <FavoritesPanel
+        favorites={favorites}
+        onOpenFile={onOpenFile}
+        onSetFolder={onSetFolder}
+        onRemoveFavorite={removeFromFavorites}
+        onReorderFavorites={onUpdateFavorites}
+      />
 
       <div className="file-browser-content" onContextMenu={handleTreeContextMenu}>
         {!folderPath ? (
