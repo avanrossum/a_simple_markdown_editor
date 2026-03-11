@@ -208,6 +208,111 @@ function registerIpcHandlers({ store, fileWatcher, getFocusedWindow }) {
     return { success: true };
   });
 
+  // ── Search in Folder ──
+
+  const SEARCH_EXTENSIONS = new Set(['.md', '.markdown', '.mdown', '.mkd', '.mkdn', '.mdwn', '.mdx', '.txt']);
+  const SEARCH_IGNORED_DIRS = new Set(['.git', 'node_modules', 'dist', 'build', 'dist-renderer', '.DS_Store']);
+
+  ipcMain.handle('file:search-in-folder', async (_, folderPath, searchTerm, options = {}) => {
+    try {
+      requireValidPath(folderPath);
+      if (!searchTerm || typeof searchTerm !== 'string') {
+        return { success: true, results: [], fileMatches: [], stats: { filesScanned: 0, matchCount: 0, capped: false } };
+      }
+
+      const maxDepth = options.maxDepth || 10;
+      const maxFiles = options.maxFiles || 5000;
+      const maxResults = options.maxResults || 1000;
+      const caseSensitive = options.caseSensitive || false;
+
+      const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const flags = caseSensitive ? 'g' : 'gi';
+      const regex = new RegExp(escaped, flags);
+      const nameRegex = new RegExp(escaped, caseSensitive ? '' : 'i');
+
+      const results = [];
+      const fileMatches = [];
+      let filesScanned = 0;
+      let capped = false;
+
+      function walk(dir, depth) {
+        if (depth > maxDepth || filesScanned >= maxFiles || results.length >= maxResults) {
+          capped = true;
+          return;
+        }
+
+        let items;
+        try {
+          items = fs.readdirSync(dir, { withFileTypes: true });
+        } catch {
+          return; // Permission error or similar
+        }
+
+        for (const item of items) {
+          if (filesScanned >= maxFiles || results.length >= maxResults) {
+            capped = true;
+            return;
+          }
+
+          if (item.name.startsWith('.') || SEARCH_IGNORED_DIRS.has(item.name)) continue;
+
+          const fullPath = path.join(dir, item.name);
+
+          if (item.isDirectory()) {
+            walk(fullPath, depth + 1);
+            continue;
+          }
+
+          const ext = path.extname(item.name).toLowerCase();
+          if (!SEARCH_EXTENSIONS.has(ext)) continue;
+
+          filesScanned++;
+
+          // Check filename match
+          if (nameRegex.test(item.name)) {
+            fileMatches.push({ filePath: fullPath, fileName: item.name });
+          }
+
+          // Search file content
+          let content;
+          try {
+            content = fs.readFileSync(fullPath, 'utf-8');
+          } catch {
+            continue;
+          }
+
+          const lines = content.split('\n');
+          for (let i = 0; i < lines.length; i++) {
+            if (results.length >= maxResults) {
+              capped = true;
+              break;
+            }
+            regex.lastIndex = 0;
+            if (regex.test(lines[i])) {
+              results.push({
+                filePath: fullPath,
+                fileName: item.name,
+                lineNumber: i + 1,
+                lineText: lines[i].slice(0, 300), // Truncate long lines
+              });
+            }
+          }
+        }
+      }
+
+      walk(folderPath, 0);
+
+      return {
+        success: true,
+        results,
+        fileMatches,
+        stats: { filesScanned, matchCount: results.length, capped },
+      };
+    } catch (err) {
+      return { success: false, error: err.message, results: [], fileMatches: [], stats: { filesScanned: 0, matchCount: 0, capped: false } };
+    }
+  });
+
   // ── File Watching ──
 
   ipcMain.handle('watch:file', async (_, filePath) => {

@@ -382,7 +382,7 @@ function truncatePath(fullPath, homeDir) {
 
 // ── Main Component ──
 
-export default function FileBrowser({ folderPath, onOpenFile, onSetFolder, onOpenSettings, width, activeFilePath, onFileRenamed, onFileDeleted, favorites, onUpdateFavorites }) {
+export default function FileBrowser({ folderPath, onOpenFile, onSetFolder, onOpenSettings, width, activeFilePath, onFileRenamed, onFileDeleted, favorites, onUpdateFavorites, onFindInFolder }) {
   const [entries, setEntries] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const [homeDir, setHomeDir] = useState(null);
@@ -532,6 +532,11 @@ export default function FileBrowser({ folderPath, onOpenFile, onSetFolder, onOpe
         action: () => createNewFolder(entry.path),
       });
       items.push({ separator: true });
+      items.push({
+        label: 'Find in Folder',
+        action: () => onFindInFolder?.(entry.path),
+      });
+      items.push({ separator: true });
     }
 
     items.push({
@@ -571,7 +576,7 @@ export default function FileBrowser({ folderPath, onOpenFile, onSetFolder, onOpe
     });
 
     setContextMenu({ x: e.clientX, y: e.clientY, items });
-  }, [createNewFile, createNewFolder, trashFile, isFavorited, addToFavorites, removeFromFavorites]);
+  }, [createNewFile, createNewFolder, trashFile, isFavorited, addToFavorites, removeFromFavorites, onFindInFolder]);
 
   const handleTreeContextMenu = useCallback((e) => {
     if (e.target.closest('.file-tree-row')) return;

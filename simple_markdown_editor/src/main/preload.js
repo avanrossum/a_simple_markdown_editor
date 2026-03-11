@@ -18,6 +18,7 @@ const electronAPI = {
   createFile: (filePath, content) => ipcRenderer.invoke('file:create', filePath, content),
   trashFile: (filePath) => ipcRenderer.invoke('file:trash', filePath),
   showInFolder: (filePath) => ipcRenderer.invoke('file:show-in-folder', filePath),
+  searchInFolder: (folderPath, searchTerm, options) => ipcRenderer.invoke('file:search-in-folder', folderPath, searchTerm, options),
 
   // ── File Watching ──
   watchFile: (filePath) => ipcRenderer.invoke('watch:file', filePath),

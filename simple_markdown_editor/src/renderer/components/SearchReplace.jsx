@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-export default function SearchReplace({ editorRef, showReplace, onClose }) {
+export default function SearchReplace({ editorRef, showReplace, onClose, onSearchChange }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [replaceTerm, setReplaceTerm] = useState('');
   const [caseSensitive, setCaseSensitive] = useState(false);
@@ -12,6 +12,18 @@ export default function SearchReplace({ editorRef, showReplace, onClose }) {
   useEffect(() => {
     searchInputRef.current?.focus();
   }, []);
+
+  // ── Notify parent of search state for preview highlighting ──
+  useEffect(() => {
+    if (onSearchChange) {
+      onSearchChange(searchTerm ? { term: searchTerm, caseSensitive, currentMatch } : null);
+    }
+  }, [searchTerm, caseSensitive, currentMatch, onSearchChange]);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => onSearchChange?.(null);
+  }, [onSearchChange]);
 
   const findMatches = useCallback(() => {
     const view = editorRef.current?.getView();

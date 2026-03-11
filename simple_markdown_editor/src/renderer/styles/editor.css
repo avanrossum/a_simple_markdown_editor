@@ -362,3 +362,17 @@
   background: var(--accent);
   color: #ffffff;
 }
+
+/* ── Search Highlight in Preview ── */
+
+mark.search-highlight {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+mark.search-highlight--current {
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  outline: 1.5px solid var(--accent);
+}

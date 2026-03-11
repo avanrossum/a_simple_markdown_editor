@@ -163,7 +163,7 @@ const SYNC_COOLDOWN_MS = 80;
 
 // ── Preview Component ──
 
-export default function Preview({ content, theme, editorRef, filePath, onOpenFile }) {
+export default function Preview({ content, theme, editorRef, filePath, onOpenFile, searchHighlight }) {
   const previewRef = useRef(null);
   const scrollSourceRef = useRef(null); // 'editor' | 'preview' | null
   const cooldownTimerRef = useRef(null);
@@ -340,6 +340,72 @@ export default function Preview({ content, theme, editorRef, filePath, onOpenFil
     preview.addEventListener('scroll', handlePreviewScroll, { passive: true });
     return () => preview.removeEventListener('scroll', handlePreviewScroll);
   }, [editorRef, interpolateScroll, setScrollSource]);
+
+  // ── Search Highlight in Preview ──
+
+  useEffect(() => {
+    const container = previewRef.current;
+    if (!container) return;
+
+    // Remove existing highlights
+    const existing = container.querySelectorAll('mark.search-highlight');
+    for (const mark of existing) {
+      const parent = mark.parentNode;
+      parent.replaceChild(document.createTextNode(mark.textContent), mark);
+      parent.normalize(); // Merge adjacent text nodes
+    }
+
+    if (!searchHighlight?.term) return;
+
+    const { term, caseSensitive, currentMatch } = searchHighlight;
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(escaped, caseSensitive ? 'g' : 'gi');
+
+    // Walk all text nodes and wrap matches
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+    let matchIndex = 0;
+    for (const node of textNodes) {
+      const text = node.textContent;
+      if (!regex.test(text)) continue;
+      regex.lastIndex = 0;
+
+      const fragment = document.createDocumentFragment();
+      let lastIndex = 0;
+      let match;
+
+      while ((match = regex.exec(text)) !== null) {
+        matchIndex++;
+        // Text before match
+        if (match.index > lastIndex) {
+          fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+        }
+        // Highlighted match
+        const mark = document.createElement('mark');
+        mark.className = matchIndex === currentMatch
+          ? 'search-highlight search-highlight--current'
+          : 'search-highlight';
+        mark.textContent = match[0];
+        fragment.appendChild(mark);
+        lastIndex = regex.lastIndex;
+      }
+
+      // Remaining text after last match
+      if (lastIndex < text.length) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+      }
+
+      node.parentNode.replaceChild(fragment, node);
+    }
+
+    // Scroll current match into view
+    const currentEl = container.querySelector('.search-highlight--current');
+    if (currentEl) {
+      currentEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [searchHighlight, html]);
 
   // Cleanup
   useEffect(() => {

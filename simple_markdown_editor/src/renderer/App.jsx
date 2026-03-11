@@ -7,6 +7,7 @@ import Toolbar from './components/Toolbar';
 import SearchReplace from './components/SearchReplace';
 import DiffView from './components/DiffView';
 import PreviewHeader from './components/PreviewHeader';
+import FindInFolder from './components/FindInFolder';
 import Settings from '../settings/Settings';
 
 const { electronAPI } = window;
@@ -38,6 +39,8 @@ export default function App() {
   const [settings, setSettings] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
   const [showReplace, setShowReplace] = useState(false);
+  const [searchHighlight, setSearchHighlight] = useState(null);
+  const [findInFolderPath, setFindInFolderPath] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [diffData, setDiffData] = useState(null);
@@ -683,6 +686,7 @@ export default function App() {
           onFileDeleted={handleFileDeleted}
           favorites={settings.favorites || []}
           onUpdateFavorites={(f) => electronAPI.setSetting('favorites', f)}
+          onFindInFolder={setFindInFolderPath}
         />
 
         {/* Sidebar Resize Handle */}
@@ -699,6 +703,7 @@ export default function App() {
                 setShowSearch(false);
                 setShowReplace(false);
               }}
+              onSearchChange={setSearchHighlight}
             />
           )}
           <Editor
@@ -723,6 +728,7 @@ export default function App() {
             editorRef={editorRef}
             filePath={activeTab.filePath}
             onOpenFile={openFile}
+            searchHighlight={searchHighlight}
           />
         </div>
       </div>
@@ -734,6 +740,14 @@ export default function App() {
           currentContent={diffData.currentContent}
           externalContent={diffData.externalContent}
           onResolve={handleDiffResolve}
+        />
+      )}
+
+      {findInFolderPath && (
+        <FindInFolder
+          folderPath={findInFolderPath}
+          onOpenFile={openFile}
+          onClose={() => setFindInFolderPath(null)}
         />
       )}
 

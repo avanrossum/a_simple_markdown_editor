@@ -211,7 +211,16 @@
 - [ ] Auto-save option (with configurable delay)
 - [ ] File browser: drag to resize width
 - [ ] Export to HTML / PDF
-- [ ] Performance: large file handling
+- [ ] Performance: large markdown files crash or freeze the app (editor + preview rendering)
+
+### Bug Fixes
+
+- [x] Tab bar: auto-scroll to newly opened/active tab when it's off-screen
+
+### Search Enhancements
+
+- [ ] Search: highlight matches in preview pane (read-only, mirrors editor matches) — _in progress: code in place but highlights not visually appearing_
+- [x] Search: "Find in Folder" via right-click context menu — search file names and content within selected folder (depth-limited, ignore patterns, relative path display)
 
 ---
 

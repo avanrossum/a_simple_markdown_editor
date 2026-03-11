@@ -1,12 +1,24 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 export default function TabBar({ tabs, activeTabId, onSelectTab, onCloseTab, onNewTab }) {
+  const tabListRef = useRef(null);
+
+  // ── Auto-scroll active tab into view ──
+  useEffect(() => {
+    if (!tabListRef.current || !activeTabId) return;
+    const activeEl = tabListRef.current.querySelector(`[data-tab-id="${activeTabId}"]`);
+    if (activeEl) {
+      activeEl.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+    }
+  }, [activeTabId, tabs.length]);
+
   return (
     <div className="tab-bar">
-      <div className="tab-list">
+      <div className="tab-list" ref={tabListRef}>
         {tabs.map((tab) => (
           <div
             key={tab.id}
+            data-tab-id={tab.id}
             className={`tab ${tab.id === activeTabId ? 'tab--active' : ''} ${tab.dirty ? 'tab--dirty' : ''}`}
             onClick={() => onSelectTab(tab.id)}
           >
