@@ -32,19 +32,21 @@ Signed and notarized with Apple — no Gatekeeper warnings. macOS 12+ required. 
 
 ## What It Does
 
-**Editor** — CodeMirror 6 with markdown syntax highlighting. Formatting toolbar with smart toggle detection (buttons detect if formatting is already applied and toggle it off). Heading buttons cycle through levels. List buttons handle multi-line selections and continue numbering. Search and replace with case sensitivity toggle, match count, and navigation.
+**Editor** — CodeMirror 6 with markdown syntax highlighting. Formatting toolbar with smart toggle detection (buttons detect if formatting is already applied and toggle it off). Heading buttons cycle through levels. List buttons handle multi-line selections and continue numbering. Full keyboard shortcuts for all formatting actions (⌘B bold, ⌘I italic, ⌘K link, etc.). Search and replace (⌘F / ⌘H) with case sensitivity toggle, match count, and navigation. Per-tab undo history — each tab has its own independent undo/redo stack.
 
-**Live Preview** — GitHub Flavored Markdown rendered in real time. Bidirectional scroll sync keeps the editor and preview aligned (section-based anchor mapping). Local and remote images display inline. Relative image paths resolve correctly.
+**Live Preview** — GitHub Flavored Markdown rendered in real time. Bidirectional scroll sync keeps the editor and preview aligned (section-based anchor mapping). Local and remote images display inline. Relative image paths resolve correctly. Clickable links — local `.md` files open in a new tab, external links open in your default browser.
 
-**File Browser** — Expandable directory tree with auto-refresh on file system changes (including subdirectories). Double-click directories to set as root. Path navigation with back button. Right-click context menu: new markdown file, new folder, rename, delete (moves to trash), show in Finder. Only markdown files are clickable.
+**File Browser** — Expandable directory tree with auto-refresh on file system changes (including subdirectories). Double-click directories to set as root. Path navigation with back button. Right-click context menu: new markdown file, new folder, rename, delete (moves to trash), show in Finder, copy path, add/remove favorites. Find in Folder: right-click any folder to search filenames and file content within it.
 
-**Tabs** — Multiple open files with dirty indicators (unsaved dot), close buttons, new tab button. Switch between files without losing your place.
+**Favorites** — Pin frequently-used files and folders for quick access. Drag-and-drop reordering. Click a favorite folder to open it in the file browser, or a file to open it in the editor. Stale path detection for unmounted drives.
 
-**Session Restore** — Open tabs, active tab, folder path, and window size/position all persist across app restarts. Close the app, open it tomorrow — everything's exactly where you left it. Multi-window support (Cmd+Shift+N), each window preserves its own state.
+**Tabs** — Multiple open files with dirty indicators (unsaved dot), close buttons, new tab button. Switch between files without losing your place — each tab saves and restores its own scroll position and cursor. Right-click context menu: show in Finder, copy path, close tab, close other tabs, close tabs to the right. Auto-scrolls to keep the active tab visible.
+
+**Session Restore** — Open tabs, active tab, folder path, and window size/position all persist across app restarts. Close the app, open it tomorrow — everything's exactly where you left it. Multi-window support (⌘⇧N), each window preserves its own state.
 
 **External Change Detection** — Edit a file in another app while it's open here, and you get a diff view showing what changed. Options: keep your version, accept external changes, or save as a new file. No silent overwrites.
 
-**Customization** — Dark, light, or system-following themes. 7 accent colors. Configurable editor font (SF Mono, Menlo, Monaco, Courier New, Andale Mono) and preview font (Helvetica Neue, Georgia, Palatino, Avenir Next, Charter). Font size control. Line number toggling.
+**Customization** — Dark, light, or system-following themes. 7 accent colors. Configurable editor font (SF Mono, Menlo, Monaco, Courier New, Andale Mono) and preview font (Helvetica Neue, Georgia, Palatino, Avenir Next, Charter). Font size control. Line number toggling. Resizable panes — drag the handles between file browser, editor, and preview.
 
 **File Associations** — Registers as a handler for `.md`, `.markdown`, `.mdown`, `.mkd`, `.mkdn`, `.mdwn`, `.mdx`, `.txt`. Shows up in Finder's "Open With" menu.
 

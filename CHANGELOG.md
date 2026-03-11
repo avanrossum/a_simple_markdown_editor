@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-03-11
+
+### Added
+
+- Tab context menu: right-click any tab for Show in Finder, Copy Path, Close Tab, Close Other Tabs, Close Tabs to the Right
+- README updated with features from v0.2.0–v0.3.1 (favorites, keyboard shortcuts, resizable panes, clickable links, Find in Folder, tab context menu)
+
 ## [0.3.0] - 2026-03-11
 
 ### Added
